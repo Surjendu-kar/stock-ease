@@ -3,7 +3,7 @@ import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 
 import { Iconify } from 'src/components/iconify';
-import { Avatar, Box } from '@mui/material';
+import { Avatar, Box, Tooltip } from '@mui/material';
 
 export type StudentProps = {
   id: string;
@@ -33,16 +33,22 @@ export function StudentTableRow({ row, onView, onEdit, onDelete }: StudentTableR
       <TableCell>{row.class}</TableCell>
       <TableCell>{row.section}</TableCell>
       <TableCell>{row.rollNumber}</TableCell>
-      <TableCell sx={{ textAlign: 'center' }}>
-        <IconButton onClick={() => onView(row)}>
-          <Iconify icon="eva:eye-fill" />
-        </IconButton>
-        <IconButton onClick={() => onEdit(row)}>
-          <Iconify icon="eva:edit-fill" />
-        </IconButton>
-        <IconButton onClick={() => onDelete(row)}>
-          <Iconify icon="eva:trash-2-fill" />
-        </IconButton>
+      <TableCell align="center">
+        <Tooltip title="View Details">
+          <IconButton onClick={() => onView(row)}>
+            <Iconify icon="eva:eye-fill" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Edit Student">
+          <IconButton onClick={() => onEdit(row)}>
+            <Iconify icon="eva:edit-fill" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Delete Student">
+          <IconButton onClick={() => onDelete(row)}>
+            <Iconify icon="eva:trash-2-fill" />
+          </IconButton>
+        </Tooltip>
       </TableCell>
     </TableRow>
   );

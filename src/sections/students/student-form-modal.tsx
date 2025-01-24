@@ -9,6 +9,7 @@ import Grid from '@mui/material/Grid';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import { Iconify } from 'src/components/iconify';
+import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { StudentProps } from './student-table-row';
 
 type StudentFormModalProps = {
@@ -20,10 +21,10 @@ type StudentFormModalProps = {
 
 export function StudentFormModal({ open, onClose, student, onSubmit }: StudentFormModalProps) {
   const [formData, setFormData] = useState({
-    name: student?.name || '',
+    name: student?.name?.trim() || '',
     class: student?.class || '',
     section: student?.section || '',
-    rollNumber: student?.rollNumber || '',
+    rollNumber: student?.rollNumber?.trim() || '',
     avatarUrl: student?.avatarUrl || '',
   });
 
@@ -53,6 +54,12 @@ export function StudentFormModal({ open, onClose, student, onSubmit }: StudentFo
       resetForm();
     }
   }, [open, resetForm]);
+
+  // Class options
+  const classes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+
+  // Section options
+  const sections = ['A', 'B', 'C', 'D'];
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -85,20 +92,36 @@ export function StudentFormModal({ open, onClose, student, onSubmit }: StudentFo
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
-              fullWidth
-              label="Class"
-              value={formData.class}
-              onChange={(e) => setFormData((prev) => ({ ...prev, class: e.target.value }))}
-            />
+            <FormControl fullWidth>
+              <InputLabel>Class</InputLabel>
+              <Select
+                value={formData.class}
+                label="Class"
+                onChange={(e) => setFormData((prev) => ({ ...prev, class: e.target.value }))}
+              >
+                {classes.map((c) => (
+                  <MenuItem key={c} value={c}>
+                    {c}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item xs={6}>
-            <TextField
-              fullWidth
-              label="Section"
-              value={formData.section}
-              onChange={(e) => setFormData((prev) => ({ ...prev, section: e.target.value }))}
-            />
+            <FormControl fullWidth>
+              <InputLabel>Section</InputLabel>
+              <Select
+                value={formData.section}
+                label="Section"
+                onChange={(e) => setFormData((prev) => ({ ...prev, section: e.target.value }))}
+              >
+                {sections.map((s) => (
+                  <MenuItem key={s} value={s}>
+                    {s}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item xs={12}>
             <TextField
