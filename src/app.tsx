@@ -10,10 +10,26 @@ import { ThemeProvider } from 'src/theme/theme-provider';
 
 import { Iconify } from 'src/components/iconify';
 
+import { useEffect } from 'react';
+
+import { auth } from 'src/auth/config';
+
 // ----------------------------------------------------------------------
 
 export default function App() {
   useScrollToTop();
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        console.log('User is signed in:', user.email);
+      } else {
+        console.log('User is signed out');
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const githubButton = (
     <Fab

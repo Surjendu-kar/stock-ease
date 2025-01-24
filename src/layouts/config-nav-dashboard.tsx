@@ -1,5 +1,6 @@
 import { Label } from 'src/components/label';
 import { SvgColor } from 'src/components/svg-color';
+import { useAuthState } from 'src/hooks/use-auth-state';
 
 // ----------------------------------------------------------------------
 
@@ -7,7 +8,7 @@ const icon = (name: string) => (
   <SvgColor width="100%" height="100%" src={`/assets/icons/navbar/${name}.svg`} />
 );
 
-export const navData = [
+const baseNavItems = [
   {
     title: 'Dashboard',
     path: '/',
@@ -34,13 +35,27 @@ export const navData = [
     icon: icon('ic-blog'),
   },
   {
-    title: 'Sign in',
-    path: '/sign-in',
-    icon: icon('ic-lock'),
-  },
-  {
     title: 'Not found',
     path: '/404',
     icon: icon('ic-disabled'),
   },
 ];
+
+export function useNavConfig() {
+  const { isAuthenticated } = useAuthState();
+
+  const navItems = [
+    ...baseNavItems,
+    ...(!isAuthenticated
+      ? [
+          {
+            title: 'Sign in',
+            path: '/sign-in',
+            icon: icon('ic-lock'),
+          },
+        ]
+      : []),
+  ];
+
+  return navItems;
+}

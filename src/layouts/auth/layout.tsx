@@ -10,8 +10,8 @@ import { stylesMode } from 'src/theme/styles';
 import { Logo } from 'src/components/logo';
 
 import { Main } from './main';
-import { HeaderSection } from '../core/header-section';
-import { LayoutSection } from '../core/layout-section';
+import { HeaderSection } from '../dashboard/core/header-section';
+import { LayoutSection } from '../dashboard/core/layout-section';
 
 // ----------------------------------------------------------------------
 

@@ -2,7 +2,6 @@ import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
-import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
@@ -13,38 +12,47 @@ import { useRouter } from 'src/routes/hooks';
 
 import { Iconify } from 'src/components/iconify';
 
-import { signIn } from 'src/auth/auth';
+import { signUp } from 'src/auth/auth';
 
 // ----------------------------------------------------------------------
 
-export function SignInView() {
+export function SignUpView() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSignIn = useCallback(
+  const handleSignUp = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
+
+      if (password !== confirmPassword) {
+        setError('Passwords do not match');
+        return;
+      }
+
       try {
-        await signIn(email, password);
-        router.push('/');
+        await signUp(email, password);
+        router.push('/sign-in');
       } catch (err) {
-        setError('Invalid email or password');
+        setError('Failed to create account');
         console.error(err);
       } finally {
         setEmail('');
         setPassword('');
+        setConfirmPassword('');
       }
     },
-    [email, password, router]
+    [email, password, confirmPassword, router]
   );
 
   const renderForm = (
     <Box
       component="form"
-      onSubmit={handleSignIn}
+      onSubmit={handleSignUp}
       display="flex"
       flexDirection="column"
       alignItems="flex-end"
@@ -58,10 +66,6 @@ export function SignInView() {
         InputLabelProps={{ shrink: true }}
         sx={{ mb: 3 }}
       />
-
-      <Link variant="body2" color="inherit" sx={{ mb: 1.5 }}>
-        Forgot password?
-      </Link>
 
       <TextField
         fullWidth
@@ -83,6 +87,26 @@ export function SignInView() {
         sx={{ mb: 3 }}
       />
 
+      <TextField
+        fullWidth
+        name="confirmPassword"
+        label="Confirm Password"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        type={showConfirmPassword ? 'text' : 'password'}
+        InputLabelProps={{ shrink: true }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} edge="end">
+                <Iconify icon={showConfirmPassword ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+        sx={{ mb: 3 }}
+      />
+
       {error && (
         <Typography color="error" sx={{ mb: 2 }}>
           {error}
@@ -90,7 +114,7 @@ export function SignInView() {
       )}
 
       <LoadingButton fullWidth size="large" type="submit" color="inherit" variant="contained">
-        Sign in
+        Sign up
       </LoadingButton>
     </Box>
   );
@@ -98,37 +122,16 @@ export function SignInView() {
   return (
     <>
       <Box gap={1.5} display="flex" flexDirection="column" alignItems="center" sx={{ mb: 5 }}>
-        <Typography variant="h5">Sign in</Typography>
+        <Typography variant="h5">Sign up</Typography>
         <Typography variant="body2" color="text.secondary">
-          Don&apos;t have an account?
-          <Link variant="subtitle2" sx={{ ml: 0.5 }} href="/sign-up">
-            Get started
+          Already have an account?
+          <Link variant="subtitle2" sx={{ ml: 0.5 }} href="/sign-in">
+            Sign in
           </Link>
         </Typography>
       </Box>
 
       {renderForm}
-
-      <Divider sx={{ my: 3, '&::before, &::after': { borderTopStyle: 'dashed' } }}>
-        <Typography
-          variant="overline"
-          sx={{ color: 'text.secondary', fontWeight: 'fontWeightMedium' }}
-        >
-          OR
-        </Typography>
-      </Divider>
-
-      <Box gap={1} display="flex" justifyContent="center">
-        <IconButton color="inherit">
-          <Iconify icon="logos:google-icon" />
-        </IconButton>
-        <IconButton color="inherit">
-          <Iconify icon="eva:github-fill" />
-        </IconButton>
-        <IconButton color="inherit">
-          <Iconify icon="ri:twitter-x-fill" />
-        </IconButton>
-      </Box>
     </>
   );
 }

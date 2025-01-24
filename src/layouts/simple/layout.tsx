@@ -8,8 +8,8 @@ import { RouterLink } from 'src/routes/components';
 import { Logo } from 'src/components/logo';
 
 import { Main, CompactContent } from './main';
-import { LayoutSection } from '../core/layout-section';
-import { HeaderSection } from '../core/header-section';
+import { LayoutSection } from '../dashboard/core/layout-section';
+import { HeaderSection } from '../dashboard/core/header-section';
 
 // ----------------------------------------------------------------------
 

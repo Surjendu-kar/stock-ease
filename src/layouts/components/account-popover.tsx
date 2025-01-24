@@ -1,7 +1,5 @@
 import type { IconButtonProps } from '@mui/material/IconButton';
-
 import { useState, useCallback } from 'react';
-
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
@@ -11,12 +9,11 @@ import MenuList from '@mui/material/MenuList';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
-
 import { useRouter, usePathname } from 'src/routes/hooks';
-
+import { logout } from 'src/auth/auth';
+import { useAuthState } from 'src/hooks/use-auth-state';
+import { auth } from 'src/auth/config';
 import { _myAccount } from 'src/_mock';
-
-// ----------------------------------------------------------------------
 
 export type AccountPopoverProps = IconButtonProps & {
   data?: {
@@ -29,8 +26,9 @@ export type AccountPopoverProps = IconButtonProps & {
 
 export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps) {
   const router = useRouter();
-
   const pathname = usePathname();
+  const { isAuthenticated } = useAuthState();
+  const user = auth.currentUser;
 
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
@@ -50,24 +48,44 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
     [handleClosePopover, router]
   );
 
+  const handleLogout = useCallback(async () => {
+    try {
+      await logout();
+      console.log('Logged out successfully');
+      setOpenPopover(null);
+      router.push('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  }, [router]);
+
+  // Get initial letter for avatar fallback
+  const avatarLetter = user?.email?.[0]?.toUpperCase() || '?';
+
   return (
     <>
-      <IconButton
-        onClick={handleOpenPopover}
-        sx={{
-          p: '2px',
-          width: 40,
-          height: 40,
-          background: (theme) =>
-            `conic-gradient(${theme.vars.palette.primary.light}, ${theme.vars.palette.warning.light}, ${theme.vars.palette.primary.light})`,
-          ...sx,
-        }}
-        {...other}
-      >
-        <Avatar src={_myAccount.photoURL} alt={_myAccount.displayName} sx={{ width: 1, height: 1 }}>
-          {_myAccount.displayName.charAt(0).toUpperCase()}
-        </Avatar>
-      </IconButton>
+      {isAuthenticated && user && (
+        <IconButton
+          onClick={handleOpenPopover}
+          sx={{
+            p: '2px',
+            width: 40,
+            height: 40,
+            background: (theme) =>
+              `conic-gradient(${theme.vars.palette.primary.light}, ${theme.vars.palette.warning.light}, ${theme.vars.palette.primary.light})`,
+            ...sx,
+          }}
+          {...other}
+        >
+          <Avatar
+            src={user.photoURL || _myAccount.photoURL}
+            alt={user.displayName || _myAccount.displayName}
+            sx={{ width: 1, height: 1 }}
+          >
+            {avatarLetter}
+          </Avatar>
+        </IconButton>
+      )}
 
       <Popover
         open={!!openPopover}
@@ -83,11 +101,11 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
       >
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {_myAccount?.displayName}
+            {user?.displayName || user?.email?.split('@')[0]}
           </Typography>
 
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {_myAccount?.email}
+            {user?.email}
           </Typography>
         </Box>
 
@@ -129,7 +147,7 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Box sx={{ p: 1 }}>
-          <Button fullWidth color="error" size="medium" variant="text">
+          <Button fullWidth color="error" size="medium" variant="text" onClick={handleLogout}>
             Logout
           </Button>
         </Box>
