@@ -8,36 +8,49 @@ const icon = (name: string) => (
   <SvgColor width="100%" height="100%" src={`/assets/icons/navbar/${name}.svg`} />
 );
 
+// const baseNavItems = [
+//   {
+//     title: 'Dashboard',
+//     path: '/',
+//     icon: icon('ic-analytics'),
+//   },
+//   {
+//     title: 'User',
+//     path: '/user',
+//     icon: icon('ic-user'),
+//   },
+//   {
+//     title: 'Product',
+//     path: '/products',
+//     icon: icon('ic-cart'),
+//     info: (
+//       <Label color="error" variant="inverted">
+//         +3
+//       </Label>
+//     ),
+//   },
+//   {
+//     title: 'Blog',
+//     path: '/blog',
+//     icon: icon('ic-blog'),
+//   },
+//   {
+//     title: 'Not found',
+//     path: '/404',
+//     icon: icon('ic-disabled'),
+//   },
+// ];
+
 const baseNavItems = [
-  {
-    title: 'Dashboard',
-    path: '/',
-    icon: icon('ic-analytics'),
-  },
   {
     title: 'User',
     path: '/user',
     icon: icon('ic-user'),
   },
   {
-    title: 'Product',
-    path: '/products',
-    icon: icon('ic-cart'),
-    info: (
-      <Label color="error" variant="inverted">
-        +3
-      </Label>
-    ),
-  },
-  {
-    title: 'Blog',
-    path: '/blog',
-    icon: icon('ic-blog'),
-  },
-  {
-    title: 'Not found',
-    path: '/404',
-    icon: icon('ic-disabled'),
+    title: 'Students',
+    path: '/students',
+    icon: icon('ic-user'),
   },
 ];
 
