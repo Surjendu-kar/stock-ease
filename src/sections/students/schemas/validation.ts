@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-export const studentValidationSchema  = yup.object().shape({
+export const studentValidationSchema = yup.object().shape({
   name: yup
     .string()
     .required('Name is required')
@@ -39,4 +39,8 @@ export const studentValidationSchema  = yup.object().shape({
     .min(10, 'Address must be at least 10 characters'),
 
   bloodGroup: yup.string().required('Blood group is required'),
+
+  avatarUrl: yup.string(),
 });
+
+export type StudentType = yup.InferType<typeof studentValidationSchema>;

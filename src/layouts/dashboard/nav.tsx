@@ -16,11 +16,6 @@ import { varAlpha } from 'src/theme/styles';
 import { Logo } from 'src/components/logo';
 import { Scrollbar } from 'src/components/scrollbar';
 
-import { NavUpgrade } from '../components/nav-upgrade';
-import { WorkspacesPopover } from '../components/workspaces-popover';
-
-import type { WorkspacesPopoverProps } from '../components/workspaces-popover';
-
 // ----------------------------------------------------------------------
 
 export type NavContentProps = {
@@ -29,12 +24,12 @@ export type NavContentProps = {
     title: string;
     icon: React.ReactNode;
     info?: React.ReactNode;
+    onClick?: () => void;
   }[];
   slots?: {
     topArea?: React.ReactNode;
     bottomArea?: React.ReactNode;
   };
-  workspaces: WorkspacesPopoverProps['data'];
   sx?: SxProps<Theme>;
 };
 
@@ -42,7 +37,7 @@ export function NavDesktop({
   sx,
   data,
   slots,
-  workspaces,
+
   layoutQuery,
 }: NavContentProps & { layoutQuery: Breakpoint }) {
   const theme = useTheme();
@@ -68,7 +63,7 @@ export function NavDesktop({
         ...sx,
       }}
     >
-      <NavContent data={data} slots={slots} workspaces={workspaces} />
+      <NavContent data={data} slots={slots} />
     </Box>
   );
 }
@@ -81,7 +76,6 @@ export function NavMobile({
   open,
   slots,
   onClose,
-  workspaces,
 }: NavContentProps & { open: boolean; onClose: () => void }) {
   const pathname = usePathname();
 
@@ -107,25 +101,21 @@ export function NavMobile({
         },
       }}
     >
-      <NavContent data={data} slots={slots} workspaces={workspaces} />
+      <NavContent data={data} slots={slots} />
     </Drawer>
   );
 }
 
 // ----------------------------------------------------------------------
 
-export function NavContent({ data, slots, workspaces, sx }: NavContentProps) {
+export function NavContent({ data, slots, sx }: NavContentProps) {
   const pathname = usePathname();
 
   return (
     <>
       <Logo />
-
       {slots?.topArea}
-
-      <WorkspacesPopover data={workspaces} sx={{ my: 2 }} />
-
-      <Scrollbar fillContent>
+      <Scrollbar fillContent sx={{ mt: 2 }}>
         <Box component="nav" display="flex" flex="1 1 auto" flexDirection="column" sx={sx}>
           <Box component="ul" gap={0.5} display="flex" flexDirection="column">
             {data.map((item) => {
@@ -135,8 +125,9 @@ export function NavContent({ data, slots, workspaces, sx }: NavContentProps) {
                 <ListItem disableGutters disablePadding key={item.title}>
                   <ListItemButton
                     disableGutters
-                    component={RouterLink}
-                    href={item.path}
+                    component={item.onClick ? 'button' : RouterLink}
+                    onClick={item.onClick}
+                    href={!item.onClick ? item.path : undefined}
                     sx={{
                       pl: 2,
                       py: 1,
@@ -151,8 +142,12 @@ export function NavContent({ data, slots, workspaces, sx }: NavContentProps) {
                         fontWeight: 'fontWeightSemiBold',
                         bgcolor: 'var(--layout-nav-item-active-bg)',
                         color: 'var(--layout-nav-item-active-color)',
+                      }),
+                      ...(item.title === 'Logout' && {
+                        color: '#ff5630',
+                        fontWeight: 'fontWeightSemiBold',
                         '&:hover': {
-                          bgcolor: 'var(--layout-nav-item-hover-bg)',
+                          bgcolor: '#ff563014',
                         },
                       }),
                     }}
@@ -160,11 +155,9 @@ export function NavContent({ data, slots, workspaces, sx }: NavContentProps) {
                     <Box component="span" sx={{ width: 24, height: 24 }}>
                       {item.icon}
                     </Box>
-
                     <Box component="span" flexGrow={1}>
                       {item.title}
                     </Box>
-
                     {item.info && item.info}
                   </ListItemButton>
                 </ListItem>
@@ -173,10 +166,7 @@ export function NavContent({ data, slots, workspaces, sx }: NavContentProps) {
           </Box>
         </Box>
       </Scrollbar>
-
       {slots?.bottomArea}
-
-      <NavUpgrade />
     </>
   );
 }

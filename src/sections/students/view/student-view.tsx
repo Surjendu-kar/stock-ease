@@ -88,7 +88,7 @@ export function StudentView() {
     setOpenModal(true);
   };
 
-  const handleSubmit = async (formData: Omit<StudentProps, 'id'>) => {
+  const handleSubmit = async (formData: StudentProps) => {
     if (!user?.uid) {
       setSnackbarMessage('User not authenticated');
       setSnackbarSeverity('error');
@@ -106,7 +106,7 @@ export function StudentView() {
         setSnackbarMessage('Student updated successfully');
       } else {
         const docRef = await studentService.add(studentData);
-        setStudents((prev) => [{ id: docRef.id, ...studentData }, ...prev]);
+        setStudents((prev) => [{ ...studentData, id: docRef.id }, ...prev]);
         setSnackbarMessage('Student added successfully');
       }
       setOpenSnackbar(true);
@@ -237,12 +237,11 @@ export function StudentView() {
           onClose={() => setOpenModal(false)}
           student={selectedStudent}
           onSubmit={handleSubmit}
-          userId={user?.uid}
           mode={modalMode}
         />
       </DashboardContent>
 
-      <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={() => setOpenSnackbar(false)}>
+      <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={() => setOpenSnackbar(false)} >
         <Alert severity={snackbarSeverity} onClose={() => setOpenSnackbar(false)}>
           {snackbarMessage}
         </Alert>

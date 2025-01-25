@@ -4,22 +4,10 @@ import IconButton from '@mui/material/IconButton';
 
 import { Iconify } from 'src/components/iconify';
 import { Avatar, Box, Tooltip } from '@mui/material';
+import { StudentType } from './schemas/validation';
 
-export type StudentProps = {
+export type StudentProps = StudentType & {
   id: string;
-  userId: string;
-  name: string;
-  class: string;
-  section: string;
-  rollNumber: string;
-  avatarUrl?: string;
-  dateOfBirth: string;
-  gender: string;
-  guardianName: string;
-  contactNumber: string;
-  email: string;
-  address: string;
-  bloodGroup: string;
 };
 
 type StudentTableRowProps = {
