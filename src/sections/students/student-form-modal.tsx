@@ -26,7 +26,8 @@ export function StudentFormModal({
   student,
   onSubmit,
   userId,
-}: StudentFormModalProps) {
+  mode = 'edit',
+}: StudentFormModalProps & { mode?: 'view' | 'edit' }) {
   const [formData, setFormData] = useState({
     userId: userId || '',
     name: student?.name?.trim() || '',
@@ -102,8 +103,14 @@ export function StudentFormModal({
   // Section options
   const sections = ['A', 'B', 'C', 'D'];
 
+  // Gender options
   const genderOptions = ['Male', 'Female', 'Other'];
+
+  // Blood group options
   const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
+
+  // Check if the form is in view mode
+  const isViewMode = mode === 'view';
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -118,11 +125,12 @@ export function StudentFormModal({
               hidden
               onChange={handleImageChange}
               aria-label="Upload avatar"
+              disabled={isViewMode}
             />
             <label htmlFor="avatar-input" aria-label="Upload avatar">
-              <IconButton component="span">
+              <IconButton component="span" disabled={isViewMode}>
                 <Avatar src={formData.avatarUrl} sx={{ width: 80, height: 80 }}>
-                  <Iconify icon="eva:camera-fill" />
+                  {isViewMode ? formData.name[0] : <Iconify icon="eva:camera-fill" />}
                 </Avatar>
               </IconButton>
             </label>
@@ -133,6 +141,7 @@ export function StudentFormModal({
               label="Name"
               value={formData.name}
               onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+              disabled={isViewMode}
             />
           </Grid>
           <Grid item xs={6}>
@@ -142,6 +151,7 @@ export function StudentFormModal({
                 value={formData.class}
                 label="Class"
                 onChange={(e) => setFormData((prev) => ({ ...prev, class: e.target.value }))}
+                disabled={isViewMode}
               >
                 {classes.map((c) => (
                   <MenuItem key={c} value={c}>
@@ -158,6 +168,7 @@ export function StudentFormModal({
                 value={formData.section}
                 label="Section"
                 onChange={(e) => setFormData((prev) => ({ ...prev, section: e.target.value }))}
+                disabled={isViewMode}
               >
                 {sections.map((s) => (
                   <MenuItem key={s} value={s}>
@@ -173,6 +184,7 @@ export function StudentFormModal({
               label="Roll Number"
               value={formData.rollNumber}
               onChange={(e) => setFormData((prev) => ({ ...prev, rollNumber: e.target.value }))}
+              disabled={isViewMode}
             />
           </Grid>
 
@@ -184,6 +196,7 @@ export function StudentFormModal({
               InputLabelProps={{ shrink: true }}
               value={formData.dateOfBirth}
               onChange={(e) => setFormData((prev) => ({ ...prev, dateOfBirth: e.target.value }))}
+              disabled={isViewMode}
             />
           </Grid>
 
@@ -194,6 +207,7 @@ export function StudentFormModal({
                 value={formData.gender}
                 label="Gender"
                 onChange={(e) => setFormData((prev) => ({ ...prev, gender: e.target.value }))}
+                disabled={isViewMode}
               >
                 {genderOptions.map((g) => (
                   <MenuItem key={g} value={g}>
@@ -210,6 +224,7 @@ export function StudentFormModal({
               label="Guardian Name"
               value={formData.guardianName}
               onChange={(e) => setFormData((prev) => ({ ...prev, guardianName: e.target.value }))}
+              disabled={isViewMode}
             />
           </Grid>
 
@@ -219,6 +234,7 @@ export function StudentFormModal({
               label="Contact Number"
               value={formData.contactNumber}
               onChange={(e) => setFormData((prev) => ({ ...prev, contactNumber: e.target.value }))}
+              disabled={isViewMode}
             />
           </Grid>
 
@@ -229,6 +245,7 @@ export function StudentFormModal({
               type="email"
               value={formData.email}
               onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+              disabled={isViewMode}
             />
           </Grid>
 
@@ -240,6 +257,7 @@ export function StudentFormModal({
               rows={3}
               value={formData.address}
               onChange={(e) => setFormData((prev) => ({ ...prev, address: e.target.value }))}
+              disabled={isViewMode}
             />
           </Grid>
 
@@ -250,6 +268,7 @@ export function StudentFormModal({
                 value={formData.bloodGroup}
                 label="Blood Group"
                 onChange={(e) => setFormData((prev) => ({ ...prev, bloodGroup: e.target.value }))}
+                disabled={isViewMode}
               >
                 {bloodGroups.map((bg) => (
                   <MenuItem key={bg} value={bg}>
@@ -262,10 +281,16 @@ export function StudentFormModal({
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" onClick={() => onSubmit(formData)}>
-          {student ? 'Update' : 'Add'}
-        </Button>
+        {isViewMode ? (
+          <Button onClick={onClose}>Back</Button>
+        ) : (
+          <>
+            <Button onClick={onClose}>Cancel</Button>
+            <Button variant="contained" onClick={() => onSubmit(formData)}>
+              {student ? 'Update' : 'Add'}
+            </Button>
+          </>
+        )}
       </DialogActions>
     </Dialog>
   );

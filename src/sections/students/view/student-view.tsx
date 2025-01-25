@@ -7,7 +7,7 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-import { Snackbar, Alert, Skeleton, TableRow, TableCell } from '@mui/material';
+import { Snackbar, Alert, TableRow, TableCell } from '@mui/material';
 import { auth } from 'src/auth/config';
 
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -15,6 +15,7 @@ import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 import { studentService } from 'src/services/student.service';
 import { StudentFormModal } from '../student-form-modal';
+import { StudentTableSkeleton } from '../student-table-skeleton';
 
 import { TableNoData } from '../table-no-data';
 import { StudentTableRow } from '../student-table-row';
@@ -34,6 +35,7 @@ export function StudentView() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+  const [modalMode, setModalMode] = useState<'view' | 'edit'>('edit');
 
   const table = useTable();
   const [filterName, setFilterName] = useState('');
@@ -70,16 +72,19 @@ export function StudentView() {
 
   const handleAdd = () => {
     setSelectedStudent(undefined);
+    setModalMode('edit');
     setOpenModal(true);
   };
 
   const handleView = (student: StudentProps) => {
     setSelectedStudent(student);
+    setModalMode('view');
     setOpenModal(true);
   };
 
   const handleEdit = (student: StudentProps) => {
     setSelectedStudent(student);
+    setModalMode('edit');
     setOpenModal(true);
   };
 
@@ -137,6 +142,7 @@ export function StudentView() {
           <Typography variant="h4" flexGrow={1}>
             Students
           </Typography>
+
           {user ? (
             <Button
               variant="contained"
@@ -157,7 +163,6 @@ export function StudentView() {
               table.onResetPage();
             }}
           />
-
           <Scrollbar>
             <TableContainer sx={{ overflow: 'unset' }}>
               <Table sx={{ minWidth: 800 }}>
@@ -178,74 +183,8 @@ export function StudentView() {
                 />
                 <TableBody>
                   {loading || authLoading ? (
-                    <>
-                      <TableRow>
-                        <TableCell>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                            <Skeleton variant="circular" width={40} height={40} />
-                            <Skeleton width={150} />
-                          </Box>
-                        </TableCell>
-                        <TableCell>
-                          <Skeleton width={60} />
-                        </TableCell>
-                        <TableCell>
-                          <Skeleton width={60} />
-                        </TableCell>
-                        <TableCell>
-                          <Skeleton width={80} />
-                        </TableCell>
-                        <TableCell>
-                          <Skeleton width={60} />
-                        </TableCell>
-                        <TableCell>
-                          <Skeleton width={100} />
-                        </TableCell>
-                        <TableCell>
-                          <Skeleton width={60} />
-                        </TableCell>
-                        <TableCell align="center">
-                          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                            <Skeleton width={40} height={40} variant="circular" />
-                            <Skeleton width={40} height={40} variant="circular" />
-                            <Skeleton width={40} height={40} variant="circular" />
-                          </Box>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                            <Skeleton variant="circular" width={40} height={40} />
-                            <Skeleton width={150} />
-                          </Box>
-                        </TableCell>
-                        <TableCell>
-                          <Skeleton width={60} />
-                        </TableCell>
-                        <TableCell>
-                          <Skeleton width={60} />
-                        </TableCell>
-                        <TableCell>
-                          <Skeleton width={80} />
-                        </TableCell>
-                        <TableCell>
-                          <Skeleton width={60} />
-                        </TableCell>
-                        <TableCell>
-                          <Skeleton width={100} />
-                        </TableCell>
-                        <TableCell>
-                          <Skeleton width={60} />
-                        </TableCell>
-                        <TableCell align="center">
-                          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                            <Skeleton width={40} height={40} variant="circular" />
-                            <Skeleton width={40} height={40} variant="circular" />
-                            <Skeleton width={40} height={40} variant="circular" />
-                          </Box>
-                        </TableCell>
-                      </TableRow>
-                    </>
+                    // Loading Skeleton
+                    <StudentTableSkeleton />
                   ) : user ? (
                     <>
                       {dataFiltered
@@ -299,6 +238,7 @@ export function StudentView() {
           student={selectedStudent}
           onSubmit={handleSubmit}
           userId={user?.uid}
+          mode={modalMode}
         />
       </DashboardContent>
 
