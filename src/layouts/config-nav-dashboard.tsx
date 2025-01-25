@@ -43,11 +43,6 @@ const icon = (name: string) => (
 
 const baseNavItems = [
   {
-    title: 'User',
-    path: '/user',
-    icon: icon('ic-user'),
-  },
-  {
     title: 'Students',
     path: '/students',
     icon: icon('ic-user'),

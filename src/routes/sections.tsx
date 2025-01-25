@@ -45,8 +45,6 @@ export function Router() {
         </DashboardLayout>
       ),
       children: [
-        // { element: <HomePage />, index: true },
-        { path: 'user', element: <UserPage /> },
         { path: 'students', element: <StudentsPage /> },
       ],
     },
@@ -60,7 +58,7 @@ export function Router() {
     },
     {
       path: '/',
-      element: <Navigate to="/user" replace />,
+      element: <Navigate to="/students" replace />,
     },
     {
       path: 'sign-up',
