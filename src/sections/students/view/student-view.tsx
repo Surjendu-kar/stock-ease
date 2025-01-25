@@ -153,6 +153,9 @@ export function StudentView() {
                     { id: 'class', label: 'Class' },
                     { id: 'section', label: 'Section' },
                     { id: 'rollNumber', label: 'Roll Number' },
+                    { id: 'gender', label: 'Gender' },
+                    { id: 'contactNumber', label: 'Contact' },
+                    { id: 'bloodGroup', label: 'Blood Group' },
                     { id: 'actions', label: 'Actions', align: 'center' },
                   ]}
                 />
@@ -203,7 +206,7 @@ export function StudentView() {
       </DashboardContent>
 
       <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={() => setOpenSnackbar(false)}>
-        <Alert severity={snackbarSeverity} onClose={() => setOpenSnackbar(false)}>
+        <Alert severity={snackbarSeverity}  onClose={() => setOpenSnackbar(false)}>
           {snackbarMessage}
         </Alert>
       </Snackbar>

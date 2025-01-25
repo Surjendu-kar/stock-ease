@@ -26,6 +26,13 @@ export function StudentFormModal({ open, onClose, student, onSubmit }: StudentFo
     section: student?.section || '',
     rollNumber: student?.rollNumber?.trim() || '',
     avatarUrl: student?.avatarUrl || '',
+    dateOfBirth: student?.dateOfBirth || '',
+    gender: student?.gender || '',
+    guardianName: student?.guardianName || '',
+    contactNumber: student?.contactNumber || '',
+    email: student?.email || '',
+    address: student?.address || '',
+    bloodGroup: student?.bloodGroup || '',
   });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,25 +48,52 @@ export function StudentFormModal({ open, onClose, student, onSubmit }: StudentFo
 
   const resetForm = useCallback(() => {
     setFormData({
-      name: student?.name || '',
-      class: student?.class || '',
-      section: student?.section || '',
-      rollNumber: student?.rollNumber || '',
-      avatarUrl: student?.avatarUrl || '',
+      name: '',
+      class: '',
+      section: '',
+      rollNumber: '',
+      avatarUrl: '',
+      dateOfBirth: '',
+      gender: '',
+      guardianName: '',
+      contactNumber: '',
+      email: '',
+      address: '',
+      bloodGroup: '',
     });
-  }, [student]);
+  }, []);
 
-  useEffect(() => {
-    if (open) {
+ useEffect(() => {
+  if (open) {
+    if (student) {
+      setFormData({
+        name: student.name || '',
+        class: student.class || '',
+        section: student.section || '', 
+        rollNumber: student.rollNumber || '',
+        avatarUrl: student.avatarUrl || '',
+        dateOfBirth: student.dateOfBirth || '',
+        gender: student.gender || '',
+        guardianName: student.guardianName || '',
+        contactNumber: student.contactNumber || '',
+        email: student.email || '',
+        address: student.address || '',
+        bloodGroup: student.bloodGroup || ''
+      });
+    } else {
       resetForm();
     }
-  }, [open, resetForm]);
+  }
+}, [open, student, resetForm]);
 
   // Class options
   const classes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
 
   // Section options
   const sections = ['A', 'B', 'C', 'D'];
+
+  const genderOptions = ['Male', 'Female', 'Other'];
+  const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -130,6 +164,90 @@ export function StudentFormModal({ open, onClose, student, onSubmit }: StudentFo
               value={formData.rollNumber}
               onChange={(e) => setFormData((prev) => ({ ...prev, rollNumber: e.target.value }))}
             />
+          </Grid>
+
+          <Grid item xs={6}>
+            <TextField
+              type="date"
+              fullWidth
+              label="Date of Birth"
+              InputLabelProps={{ shrink: true }}
+              value={formData.dateOfBirth}
+              onChange={(e) => setFormData((prev) => ({ ...prev, dateOfBirth: e.target.value }))}
+            />
+          </Grid>
+
+          <Grid item xs={6}>
+            <FormControl fullWidth>
+              <InputLabel>Gender</InputLabel>
+              <Select
+                value={formData.gender}
+                label="Gender"
+                onChange={(e) => setFormData((prev) => ({ ...prev, gender: e.target.value }))}
+              >
+                {genderOptions.map((g) => (
+                  <MenuItem key={g} value={g}>
+                    {g}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Guardian Name"
+              value={formData.guardianName}
+              onChange={(e) => setFormData((prev) => ({ ...prev, guardianName: e.target.value }))}
+            />
+          </Grid>
+
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              label="Contact Number"
+              value={formData.contactNumber}
+              onChange={(e) => setFormData((prev) => ({ ...prev, contactNumber: e.target.value }))}
+            />
+          </Grid>
+
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              label="Email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Address"
+              multiline
+              rows={3}
+              value={formData.address}
+              onChange={(e) => setFormData((prev) => ({ ...prev, address: e.target.value }))}
+            />
+          </Grid>
+
+          <Grid item xs={6}>
+            <FormControl fullWidth>
+              <InputLabel>Blood Group</InputLabel>
+              <Select
+                value={formData.bloodGroup}
+                label="Blood Group"
+                onChange={(e) => setFormData((prev) => ({ ...prev, bloodGroup: e.target.value }))}
+              >
+                {bloodGroups.map((bg) => (
+                  <MenuItem key={bg} value={bg}>
+                    {bg}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
         </Grid>
       </DialogContent>

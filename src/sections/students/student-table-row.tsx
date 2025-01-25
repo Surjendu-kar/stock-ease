@@ -12,6 +12,13 @@ export type StudentProps = {
   section: string;
   rollNumber: string;
   avatarUrl?: string;
+  dateOfBirth: string;
+  gender: string;
+  guardianName: string;
+  contactNumber: string;
+  email: string;
+  address: string;
+  bloodGroup: string;
 };
 
 type StudentTableRowProps = {
@@ -33,6 +40,9 @@ export function StudentTableRow({ row, onView, onEdit, onDelete }: StudentTableR
       <TableCell>{row.class}</TableCell>
       <TableCell>{row.section}</TableCell>
       <TableCell>{row.rollNumber}</TableCell>
+      <TableCell>{row.gender}</TableCell>
+      <TableCell>{row.contactNumber}</TableCell>
+      <TableCell>{row.bloodGroup}</TableCell>
       <TableCell align="center">
         <Tooltip title="View Details">
           <IconButton onClick={() => onView(row)}>
