@@ -7,6 +7,7 @@ import { Avatar, Box, Tooltip } from '@mui/material';
 
 export type StudentProps = {
   id: string;
+  userId: string;
   name: string;
   class: string;
   section: string;

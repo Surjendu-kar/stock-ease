@@ -17,10 +17,18 @@ type StudentFormModalProps = {
   onClose: () => void;
   student?: StudentProps;
   onSubmit: (data: Omit<StudentProps, 'id'>) => void;
+  userId?: string;
 };
 
-export function StudentFormModal({ open, onClose, student, onSubmit }: StudentFormModalProps) {
+export function StudentFormModal({
+  open,
+  onClose,
+  student,
+  onSubmit,
+  userId,
+}: StudentFormModalProps) {
   const [formData, setFormData] = useState({
+    userId: userId || '',
     name: student?.name?.trim() || '',
     class: student?.class || '',
     section: student?.section || '',
@@ -48,6 +56,7 @@ export function StudentFormModal({ open, onClose, student, onSubmit }: StudentFo
 
   const resetForm = useCallback(() => {
     setFormData({
+      userId: '',
       name: '',
       class: '',
       section: '',
@@ -63,28 +72,29 @@ export function StudentFormModal({ open, onClose, student, onSubmit }: StudentFo
     });
   }, []);
 
- useEffect(() => {
-  if (open) {
-    if (student) {
-      setFormData({
-        name: student.name || '',
-        class: student.class || '',
-        section: student.section || '', 
-        rollNumber: student.rollNumber || '',
-        avatarUrl: student.avatarUrl || '',
-        dateOfBirth: student.dateOfBirth || '',
-        gender: student.gender || '',
-        guardianName: student.guardianName || '',
-        contactNumber: student.contactNumber || '',
-        email: student.email || '',
-        address: student.address || '',
-        bloodGroup: student.bloodGroup || ''
-      });
-    } else {
-      resetForm();
+  useEffect(() => {
+    if (open) {
+      if (student) {
+        setFormData({
+          userId: student.userId || '',
+          name: student.name || '',
+          class: student.class || '',
+          section: student.section || '',
+          rollNumber: student.rollNumber || '',
+          avatarUrl: student.avatarUrl || '',
+          dateOfBirth: student.dateOfBirth || '',
+          gender: student.gender || '',
+          guardianName: student.guardianName || '',
+          contactNumber: student.contactNumber || '',
+          email: student.email || '',
+          address: student.address || '',
+          bloodGroup: student.bloodGroup || '',
+        });
+      } else {
+        resetForm();
+      }
     }
-  }
-}, [open, student, resetForm]);
+  }, [open, student, resetForm]);
 
   // Class options
   const classes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];

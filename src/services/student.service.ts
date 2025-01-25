@@ -1,19 +1,30 @@
-import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs } from 'firebase/firestore';
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  where,
+} from 'firebase/firestore';
 import { db } from 'src/auth/config';
 import { StudentProps } from 'src/sections/students/student-table-row';
 
 const COLLECTION = 'students';
 
 export const studentService = {
-  getAll: async () => {
-    const querySnapshot = await getDocs(collection(db, COLLECTION));
+  getAll: async (userId: string) => {
+    const q = query(collection(db, COLLECTION), where('userId', '==', userId));
+    const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(
-      (docSnap) => ({ id: docSnap.id, ...docSnap.data() }) as StudentProps
+      (document) => ({ id: document.id, ...document.data() }) as StudentProps
     );
   },
 
-  add: async (student: Omit<StudentProps, 'id'>) => addDoc(collection(db, COLLECTION), student),
-
+  add: async (student: Omit<StudentProps, 'id'>) => {
+    return addDoc(collection(db, COLLECTION), student);
+  },
   update: async (id: string, student: Partial<StudentProps>) =>
     updateDoc(doc(db, COLLECTION, id), student),
 

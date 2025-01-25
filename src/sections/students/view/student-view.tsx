@@ -7,29 +7,30 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-import { Snackbar, Alert } from '@mui/material';
+import { Snackbar, Alert, Skeleton, TableRow, TableCell } from '@mui/material';
+import { auth } from 'src/auth/config';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
-import { STUDENT_DATA } from 'src/_mock/student-data';
 import { studentService } from 'src/services/student.service';
 import { StudentFormModal } from '../student-form-modal';
 
 import { TableNoData } from '../table-no-data';
 import { StudentTableRow } from '../student-table-row';
 import { StudentTableHead } from '../student-table-head';
-import { TableEmptyRows } from '../table-empty-rows';
 import { StudentTableToolbar } from '../student-table-toolbar';
 
-import { emptyRows, applyFilter, getComparator } from '../utils';
+import { applyFilter, getComparator } from '../utils';
 import type { StudentProps } from '../student-table-row';
 
 export function StudentView() {
+  const [user, setUser] = useState(auth.currentUser);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [students, setStudents] = useState<StudentProps[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<StudentProps | undefined>();
-  const [loading, setLoading] = useState(true);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
@@ -46,16 +47,26 @@ export function StudentView() {
   const notFound = !dataFiltered.length && !!filterName;
 
   useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+      setAuthLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
     const loadStudents = async () => {
       try {
-        const data = await studentService.getAll();
-        setStudents(data);
+        if (user?.uid) {
+          const data = await studentService.getAll(user.uid);
+          setStudents(data);
+        }
       } finally {
         setLoading(false);
       }
     };
     loadStudents();
-  }, []);
+  }, [user]);
 
   const handleAdd = () => {
     setSelectedStudent(undefined);
@@ -73,16 +84,24 @@ export function StudentView() {
   };
 
   const handleSubmit = async (formData: Omit<StudentProps, 'id'>) => {
+    if (!user?.uid) {
+      setSnackbarMessage('User not authenticated');
+      setSnackbarSeverity('error');
+      setOpenSnackbar(true);
+      return;
+    }
     try {
+      const studentData = { ...formData, userId: user.uid };
+
       if (selectedStudent) {
-        await studentService.update(selectedStudent.id, formData);
+        await studentService.update(selectedStudent.id, studentData);
         setStudents((prev) =>
-          prev.map((s) => (s.id === selectedStudent.id ? { ...s, ...formData } : s))
+          prev.map((s) => (s.id === selectedStudent.id ? { ...s, ...studentData } : s))
         );
         setSnackbarMessage('Student updated successfully');
       } else {
-        const docRef = await studentService.add(formData);
-        setStudents((prev) => [{ id: docRef.id, ...formData }, ...prev]);
+        const docRef = await studentService.add(studentData);
+        setStudents((prev) => [{ id: docRef.id, ...studentData }, ...prev]);
         setSnackbarMessage('Student added successfully');
       }
       setOpenSnackbar(true);
@@ -111,10 +130,6 @@ export function StudentView() {
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <>
       <DashboardContent>
@@ -122,14 +137,16 @@ export function StudentView() {
           <Typography variant="h4" flexGrow={1}>
             Students
           </Typography>
-          <Button
-            variant="contained"
-            color="inherit"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-            onClick={handleAdd}
-          >
-            New Student
-          </Button>
+          {user ? (
+            <Button
+              variant="contained"
+              color="inherit"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+              onClick={handleAdd}
+            >
+              New Student
+            </Button>
+          ) : null}
         </Box>
 
         <Card>
@@ -160,27 +177,106 @@ export function StudentView() {
                   ]}
                 />
                 <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <StudentTableRow
-                        key={row.id}
-                        row={row}
-                        onView={handleView}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                      />
-                    ))}
+                  {loading || authLoading ? (
+                    <>
+                      <TableRow>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Skeleton variant="circular" width={40} height={40} />
+                            <Skeleton width={150} />
+                          </Box>
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton width={60} />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton width={60} />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton width={80} />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton width={60} />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton width={100} />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton width={60} />
+                        </TableCell>
+                        <TableCell align="center">
+                          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+                            <Skeleton width={40} height={40} variant="circular" />
+                            <Skeleton width={40} height={40} variant="circular" />
+                            <Skeleton width={40} height={40} variant="circular" />
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Skeleton variant="circular" width={40} height={40} />
+                            <Skeleton width={150} />
+                          </Box>
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton width={60} />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton width={60} />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton width={80} />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton width={60} />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton width={100} />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton width={60} />
+                        </TableCell>
+                        <TableCell align="center">
+                          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+                            <Skeleton width={40} height={40} variant="circular" />
+                            <Skeleton width={40} height={40} variant="circular" />
+                            <Skeleton width={40} height={40} variant="circular" />
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    </>
+                  ) : user ? (
+                    <>
+                      {dataFiltered
+                        .slice(
+                          table.page * table.rowsPerPage,
+                          table.page * table.rowsPerPage + table.rowsPerPage
+                        )
+                        .map((row) => (
+                          <StudentTableRow
+                            key={row.id}
+                            row={row}
+                            onView={handleView}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                          />
+                        ))}
 
-                  <TableEmptyRows
-                    height={68}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, STUDENT_DATA.length)}
-                  />
-
-                  {notFound && <TableNoData searchQuery={filterName} />}
+                      {notFound && <TableNoData searchQuery={filterName} />}
+                    </>
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
+                        <Typography variant="h6" paragraph>
+                          Please login to manage students
+                        </Typography>
+                        <Button variant="contained" href="/sign-in">
+                          Login
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -202,11 +298,12 @@ export function StudentView() {
           onClose={() => setOpenModal(false)}
           student={selectedStudent}
           onSubmit={handleSubmit}
+          userId={user?.uid}
         />
       </DashboardContent>
 
       <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={() => setOpenSnackbar(false)}>
-        <Alert severity={snackbarSeverity}  onClose={() => setOpenSnackbar(false)}>
+        <Alert severity={snackbarSeverity} onClose={() => setOpenSnackbar(false)}>
           {snackbarMessage}
         </Alert>
       </Snackbar>
