@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   getStoredInventory,
   updateItem,
@@ -11,6 +12,28 @@ import InventoryFilters from "./components/InventoryFilters";
 import InventoryTable from "./components/InventoryTable";
 import InventoryModal from "./components/InventoryModal";
 import ConfirmDialog from "./components/ConfirmDialog";
+
+const containerVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      when: "beforeChildren",
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.3 },
+  },
+};
 
 const App = () => {
   const [items, setItems] = useState<InventoryItem[]>([]);
@@ -117,40 +140,74 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="min-h-screen bg-gray-50 p-8"
+    >
       <div className="max-w-7xl mx-auto">
-        <Header onAddClick={() => setIsAddModalOpen(true)} />
+        <motion.div variants={itemVariants}>
+          <Header onAddClick={() => setIsAddModalOpen(true)} />
+        </motion.div>
 
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <InventoryFilters
-            filters={filters}
-            categories={categories}
-            onFilterChange={setFilters}
-          />
-          <InventoryTable
-            items={filteredItems}
-            onEdit={setEditingItem}
-            onDelete={handleDeleteItem}
-          />
-        </div>
+        <motion.div
+          variants={itemVariants}
+          className="bg-white rounded-lg shadow-sm p-6 mb-6"
+        >
+          <motion.div variants={itemVariants}>
+            <InventoryFilters
+              filters={filters}
+              categories={categories}
+              onFilterChange={setFilters}
+            />
+          </motion.div>
+          <motion.div
+            variants={itemVariants}
+            initial="hidden"
+            animate="visible"
+            layout
+          >
+            <InventoryTable
+              items={filteredItems}
+              onEdit={setEditingItem}
+              onDelete={handleDeleteItem}
+            />
+          </motion.div>
+        </motion.div>
       </div>
 
-      <InventoryModal
-        isOpen={isAddModalOpen || editingItem !== null}
-        editingItem={editingItem}
-        categories={categories}
-        onClose={handleModalClose}
-        onSubmit={handleModalSubmit}
-      />
+      <AnimatePresence>
+        {(isAddModalOpen || editingItem !== null) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <InventoryModal
+              isOpen={isAddModalOpen || editingItem !== null}
+              editingItem={editingItem}
+              categories={categories}
+              onClose={handleModalClose}
+              onSubmit={handleModalSubmit}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <ConfirmDialog
-        isOpen={deleteConfirmation.isOpen}
-        title="Confirm Deletion"
-        message="Are you sure you want to delete this item? This action cannot be undone."
-        onConfirm={confirmDelete}
-        onCancel={() => setDeleteConfirmation({ isOpen: false, itemId: null })}
-      />
-    </div>
+      {deleteConfirmation.isOpen && (
+        <ConfirmDialog
+          isOpen={deleteConfirmation.isOpen}
+          title="Confirm Deletion"
+          message="Are you sure you want to delete this item? This action cannot be undone."
+          onConfirm={confirmDelete}
+          onCancel={() =>
+            setDeleteConfirmation({ isOpen: false, itemId: null })
+          }
+        />
+      )}
+    </motion.div>
   );
 };
 
