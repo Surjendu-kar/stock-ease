@@ -1,4 +1,5 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
@@ -7,23 +8,25 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-import { Snackbar, Alert, TableRow, TableCell } from '@mui/material';
-import { auth } from 'src/auth/config';
+import { Alert, Snackbar, TableRow, TableCell } from '@mui/material';
 
 import { DashboardContent } from 'src/layouts/dashboard';
+import { studentService } from 'src/services/student.service';
+
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
-import { studentService } from 'src/services/student.service';
-import { StudentFormModal } from '../student-form-modal';
-import { StudentTableSkeleton } from '../student-table-skeleton';
+
+import { auth } from 'src/auth/config';
 
 import { TableNoData } from '../table-no-data';
+import { applyFilter, getComparator } from '../utils';
 import { StudentTableRow } from '../student-table-row';
 import { StudentTableHead } from '../student-table-head';
+import { StudentFormModal } from '../student-form-modal';
 import { StudentTableToolbar } from '../student-table-toolbar';
+import { StudentTableSkeleton } from '../student-table-skeleton';
 
-import { applyFilter, getComparator } from '../utils';
-import type { StudentProps } from '../student-table-row';
+import type { StudentProps, StudentFormData } from '../types/student-types';
 
 export function StudentView() {
   const [user, setUser] = useState(auth.currentUser);
@@ -88,7 +91,7 @@ export function StudentView() {
     setOpenModal(true);
   };
 
-  const handleSubmit = async (formData: StudentProps) => {
+  const handleSubmit = async (formData: StudentFormData) => {
     if (!user?.uid) {
       setSnackbarMessage('User not authenticated');
       setSnackbarSeverity('error');
@@ -241,7 +244,7 @@ export function StudentView() {
         />
       </DashboardContent>
 
-      <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={() => setOpenSnackbar(false)} >
+      <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={() => setOpenSnackbar(false)}>
         <Alert severity={snackbarSeverity} onClose={() => setOpenSnackbar(false)}>
           {snackbarMessage}
         </Alert>

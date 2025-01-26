@@ -1,14 +1,11 @@
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
+import { Box, Avatar, Tooltip } from '@mui/material';
 
 import { Iconify } from 'src/components/iconify';
-import { Avatar, Box, Tooltip } from '@mui/material';
-import { StudentType } from './schemas/validation';
 
-export type StudentProps = StudentType & {
-  id: string;
-};
+import type { StudentProps } from './types/student-types';
 
 type StudentTableRowProps = {
   row: StudentProps;

@@ -1,4 +1,4 @@
-import type { StudentProps } from './student-table-row';
+import type { StudentProps } from './types/student-types';
 
 export const visuallyHidden = {
   border: 0,

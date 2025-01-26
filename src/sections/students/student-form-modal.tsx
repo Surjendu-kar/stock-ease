@@ -1,20 +1,25 @@
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import Avatar from '@mui/material/Avatar';
+import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Grid from '@mui/material/Grid';
-import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
-import { Iconify } from 'src/components/iconify';
-import { FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
-import { StudentType, studentValidationSchema } from './schemas/validation';
+import { Box, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 
-const defaultValues = {
+import { Iconify } from 'src/components/iconify';
+
+import { studentValidationSchema } from './schemas/validation';
+
+import type { StudentProps, StudentFormData } from './types/student-types';
+
+const defaultValues: StudentFormData = {
   name: '',
   class: '',
   section: '',
@@ -32,8 +37,9 @@ const defaultValues = {
 type StudentFormModalProps = {
   open: boolean;
   onClose: () => void;
-  student?: StudentType;
-  onSubmit: (data: StudentType) => void;
+  student?: StudentProps;
+  onSubmit: (data: StudentFormData) => void;
+  mode?: 'view' | 'edit';
 };
 
 export function StudentFormModal({
@@ -42,7 +48,7 @@ export function StudentFormModal({
   student,
   onSubmit,
   mode = 'edit',
-}: StudentFormModalProps & { mode?: 'view' | 'edit' }) {
+}: StudentFormModalProps) {
   // Class options
   const classes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
   const sections = ['A', 'B', 'C', 'D'];
@@ -59,7 +65,7 @@ export function StudentFormModal({
     setValue,
     reset,
     formState: { errors },
-  } = useForm<StudentType>({
+  } = useForm<StudentFormData>({
     resolver: yupResolver(studentValidationSchema),
     defaultValues,
   });
@@ -101,7 +107,7 @@ export function StudentFormModal({
   };
 
   // Handle form submission
-  const onSubmitHandler = (data: StudentType) => {
+  const onSubmitHandler = (data: StudentFormData) => {
     onSubmit(data);
   };
 

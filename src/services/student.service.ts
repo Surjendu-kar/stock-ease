@@ -1,15 +1,17 @@
+import type { StudentProps } from 'src/sections/students/types/student-types';
+
 import {
-  collection,
-  addDoc,
-  updateDoc,
-  deleteDoc,
   doc,
-  getDocs,
   query,
   where,
+  addDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  collection,
 } from 'firebase/firestore';
+
 import { db } from 'src/auth/config';
-import { StudentProps } from 'src/sections/students/student-table-row';
 
 const COLLECTION = 'students';
 
@@ -22,10 +24,9 @@ export const studentService = {
     );
   },
 
-  add: async (student: Omit<StudentProps, 'id'>) => {
-    return addDoc(collection(db, COLLECTION), student);
-  },
-  update: async (id: string, student: Partial<StudentProps>) =>
+  add: async (student: Omit<StudentProps, 'id'>) => addDoc(collection(db, COLLECTION), student),
+
+  update: async (id: string, student: Partial<Omit<StudentProps, 'id'>>) =>
     updateDoc(doc(db, COLLECTION, id), student),
 
   delete: async (id: string) => deleteDoc(doc(db, COLLECTION, id)),
