@@ -11,7 +11,7 @@ import IconButton from '@mui/material/IconButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import { Box, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+import { Box, Select, Tooltip, MenuItem, InputLabel, FormControl } from '@mui/material';
 
 import { Iconify } from 'src/components/iconify';
 
@@ -34,12 +34,32 @@ const defaultValues: StudentFormData = {
   bloodGroup: '',
 };
 
+const getFormattedValues = (studentData?: StudentProps): StudentFormData => {
+  if (!studentData) return defaultValues;
+
+  return {
+    name: studentData.name?.trim() || '',
+    class: studentData.class || '',
+    section: studentData.section || '',
+    rollNumber: studentData.rollNumber?.trim() || '',
+    avatarUrl: studentData.avatarUrl || '',
+    dateOfBirth: studentData.dateOfBirth || '',
+    gender: studentData.gender || '',
+    guardianName: studentData.guardianName?.trim() || '',
+    contactNumber: studentData.contactNumber?.trim() || '',
+    email: studentData.email?.trim() || '',
+    address: studentData.address?.trim() || '',
+    bloodGroup: studentData.bloodGroup || '',
+  };
+};
+
 type StudentFormModalProps = {
   open: boolean;
   onClose: () => void;
   student?: StudentProps;
   onSubmit: (data: StudentFormData) => void;
   mode?: 'view' | 'edit';
+  onModeChange?: (mode: 'view' | 'edit') => void;
 };
 
 export function StudentFormModal({
@@ -48,6 +68,7 @@ export function StudentFormModal({
   student,
   onSubmit,
   mode = 'edit',
+  onModeChange,
 }: StudentFormModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -66,33 +87,16 @@ export function StudentFormModal({
     handleSubmit,
     setValue,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<StudentFormData>({
     resolver: yupResolver(studentValidationSchema),
-    defaultValues,
+    defaultValues: getFormattedValues(student),
   });
 
   // Reset form when modal opens/closes
   React.useEffect(() => {
     if (open) {
-      if (student) {
-        reset({
-          name: student.name || '',
-          class: student.class || '',
-          section: student.section || '',
-          rollNumber: student.rollNumber || '',
-          avatarUrl: student.avatarUrl || '',
-          dateOfBirth: student.dateOfBirth || '',
-          gender: student.gender || '',
-          guardianName: student.guardianName || '',
-          contactNumber: student.contactNumber || '',
-          email: student.email || '',
-          address: student.address || '',
-          bloodGroup: student.bloodGroup || '',
-        });
-      } else {
-        reset(defaultValues);
-      }
+      reset(getFormattedValues(student));
     }
   }, [open, student, reset]);
 
@@ -127,17 +131,33 @@ export function StudentFormModal({
         sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
       >
         {isViewMode ? 'View Student' : student ? 'Edit Student' : 'Add New Student'}
-        {isViewMode && (
-          <IconButton
-            aria-label="close"
-            onClick={onClose}
-            sx={{
-              color: (theme) => theme.palette.grey[500],
-            }}
-          >
-            <Iconify icon="eva:close-fill" width={25} />
-          </IconButton>
-        )}
+        <Box>
+          {isViewMode && (
+            <Tooltip title="Edit Student">
+              <IconButton
+                aria-label="edit"
+                onClick={() => onModeChange?.('edit')}
+                sx={{
+                  color: (theme) => theme.palette.grey[500],
+                  mr: 1,
+                }}
+              >
+                <Iconify icon="eva:edit-fill" width={22} />
+              </IconButton>
+            </Tooltip>
+          )}
+          <Tooltip title="Close">
+            <IconButton
+              aria-label="close"
+              onClick={onClose}
+              sx={{
+                color: (theme) => theme.palette.grey[500],
+              }}
+            >
+              <Iconify icon="eva:close-fill" width={25} />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </DialogTitle>
       <form onSubmit={handleSubmit(onSubmitHandler)}>
         <DialogContent sx={{ paddingTop: 0 }}>
@@ -419,19 +439,37 @@ export function StudentFormModal({
               />
             </Grid>
           </Grid>
+
+          <DialogActions sx={{ padding: '10px 0 0 0' }}>
+            {!isViewMode && (
+              <>
+                <Button
+                  onClick={onClose}
+                  disabled={isSubmitting}
+                  size="large"
+                  sx={{
+                    px: 3,
+                    py: 1,
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  size="large"
+                  disabled={isSubmitting || (student && !isDirty)}
+                  sx={{
+                    px: 3,
+                    py: 1,
+                  }}
+                >
+                  {student ? 'Update' : 'Add'}
+                </Button>
+              </>
+            )}
+          </DialogActions>
         </DialogContent>
-        <DialogActions>
-          {!isViewMode && (
-            <>
-              <Button onClick={onClose} disabled={isSubmitting}>
-                Cancel
-              </Button>
-              <Button type="submit" variant="contained" disabled={isSubmitting}>
-                {student ? 'Update' : 'Add'}
-              </Button>
-            </>
-          )}
-        </DialogActions>
       </form>
     </Dialog>
   );

@@ -24,13 +24,16 @@ export function SignUpView() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSignUp = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
+      setIsSubmitting(true);
 
       if (password !== confirmPassword) {
         setError('Passwords do not match');
+        setIsSubmitting(false);
         return;
       }
 
@@ -41,6 +44,7 @@ export function SignUpView() {
         setError('Failed to create account');
         console.error(err);
       } finally {
+        setIsSubmitting(false);
         setEmail('');
         setPassword('');
         setConfirmPassword('');
@@ -113,7 +117,20 @@ export function SignUpView() {
         </Typography>
       )}
 
-      <LoadingButton fullWidth size="large" type="submit" color="inherit" variant="contained">
+      <LoadingButton
+        fullWidth
+        size="large"
+        type="submit"
+        color="inherit"
+        variant="contained"
+        loading={isSubmitting}
+        sx={{
+          transition: 'transform 0.2s ease-in-out',
+          '&:hover': {
+            transform: 'scale(1.02)',
+          },
+        }}
+      >
         Sign up
       </LoadingButton>
     </Box>

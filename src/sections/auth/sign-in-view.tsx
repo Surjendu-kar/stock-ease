@@ -2,7 +2,6 @@ import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
-import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
@@ -23,10 +22,12 @@ export function SignInView() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSignIn = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
+      setIsSubmitting(true);
       try {
         await signIn(email, password);
         router.push('/');
@@ -34,6 +35,7 @@ export function SignInView() {
         setError('Invalid email or password');
         console.error(err);
       } finally {
+        setIsSubmitting(false);
         setEmail('');
         setPassword('');
       }
@@ -89,7 +91,20 @@ export function SignInView() {
         </Typography>
       )}
 
-      <LoadingButton fullWidth size="large" type="submit" color="inherit" variant="contained">
+      <LoadingButton
+        fullWidth
+        size="large"
+        type="submit"
+        color="inherit"
+        variant="contained"
+        loading={isSubmitting}
+        sx={{
+          transition: 'transform 0.2s ease-in-out',
+          '&:hover': {
+            transform: 'scale(1.02)',
+          },
+        }}
+      >
         Sign in
       </LoadingButton>
     </Box>

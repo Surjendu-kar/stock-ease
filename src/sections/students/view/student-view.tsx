@@ -8,7 +8,7 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-import { Alert, Snackbar, TableRow, TableCell } from '@mui/material';
+import { Alert, Snackbar } from '@mui/material';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 import { studentService } from 'src/services/student.service';
@@ -194,9 +194,8 @@ export function StudentView() {
                 />
                 <TableBody>
                   {loading || authLoading ? (
-                    // Loading Skeleton
                     <StudentTableSkeleton />
-                  ) : user ? (
+                  ) : (
                     <>
                       {dataFiltered
                         .slice(
@@ -215,17 +214,6 @@ export function StudentView() {
 
                       {notFound && <TableNoData searchQuery={filterName} />}
                     </>
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
-                        <Typography variant="h6" paragraph>
-                          Please login to manage students
-                        </Typography>
-                        <Button variant="contained" href="/sign-in">
-                          Login
-                        </Button>
-                      </TableCell>
-                    </TableRow>
                   )}
                 </TableBody>
               </Table>
@@ -249,6 +237,7 @@ export function StudentView() {
           student={selectedStudent}
           onSubmit={handleSubmit}
           mode={modalMode}
+          onModeChange={setModalMode}
         />
       </DashboardContent>
 
