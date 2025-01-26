@@ -42,9 +42,15 @@ const App = () => {
   };
 
   const handleUpdateItem = (updatedItem: InventoryItem) => {
-    updateItem(updatedItem);
+    const itemWithNewTimestamp = {
+      ...updatedItem,
+      lastUpdated: new Date().toISOString(),
+    };
+    updateItem(itemWithNewTimestamp);
     setItems((prev) =>
-      prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
+      prev.map((item) =>
+        item.id === updatedItem.id ? itemWithNewTimestamp : item
+      )
     );
     setEditingItem(null);
   };
@@ -76,6 +82,13 @@ const App = () => {
       if (filters.sortBy === "quantity")
         return (a.quantity - b.quantity) * order;
       if (filters.sortBy === "price") return (a.price - b.price) * order;
+      if (filters.sortBy === "lastUpdated") {
+        return (
+          (new Date(a.lastUpdated).getTime() -
+            new Date(b.lastUpdated).getTime()) *
+          order
+        );
+      }
       return a[filters.sortBy].localeCompare(b[filters.sortBy]) * order;
     });
 

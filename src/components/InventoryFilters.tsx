@@ -48,6 +48,7 @@ const InventoryFilters = ({
       <option value="quantity">Sort by Quantity</option>
       <option value="price">Sort by Price</option>
       <option value="category">Sort by Category</option>
+      <option value="lastUpdated">Sort by Last Updated</option>
     </select>
     <button
       onClick={() =>

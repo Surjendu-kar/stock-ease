@@ -8,7 +8,7 @@ interface InventoryItem {
 }
 
 type SortOrder = "asc" | "desc";
-type SortField = "name" | "quantity" | "price" | "category";
+type SortField = "name" | "quantity" | "price" | "category" | "lastUpdated";
 
 interface InventoryFilters {
   category: string;

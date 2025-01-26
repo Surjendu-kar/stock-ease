@@ -18,6 +18,7 @@ A modern inventory management system built with React, TypeScript, and Vite.
 - **Vite**
 - **Tailwind CSS**
 - **React Icons**
+- **Dayjs**
 
 ## Prerequisites
 

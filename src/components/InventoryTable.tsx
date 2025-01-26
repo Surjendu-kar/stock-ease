@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 
 interface InventoryTableProps {
@@ -24,6 +25,9 @@ const InventoryTable = ({ items, onEdit, onDelete }: InventoryTableProps) => (
             Price
           </th>
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Last Updated
+          </th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
             Actions
           </th>
         </tr>
@@ -31,7 +35,7 @@ const InventoryTable = ({ items, onEdit, onDelete }: InventoryTableProps) => (
       <tbody className="bg-white divide-y divide-gray-200">
         {items.length === 0 ? (
           <tr>
-            <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+            <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
               No items found
             </td>
           </tr>
@@ -56,6 +60,11 @@ const InventoryTable = ({ items, onEdit, onDelete }: InventoryTableProps) => (
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 ${item.price.toFixed(2)}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                {item.lastUpdated
+                  ? dayjs(item.lastUpdated).format("MM/DD/YYYY hh:mm A")
+                  : "-"}
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex gap-3">
