@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -49,6 +49,8 @@ export function StudentFormModal({
   onSubmit,
   mode = 'edit',
 }: StudentFormModalProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Class options
   const classes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
   const sections = ['A', 'B', 'C', 'D'];
@@ -107,12 +109,20 @@ export function StudentFormModal({
   };
 
   // Handle form submission
-  const onSubmitHandler = (data: StudentFormData) => {
-    onSubmit(data);
+  const onSubmitHandler = async (data: StudentFormData) => {
+    try {
+      setIsSubmitting(true);
+      await onSubmit(data);
+      onClose();
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={() => !isSubmitting && onClose()} maxWidth="sm" fullWidth>
       <DialogTitle
         sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
       >
@@ -413,9 +423,11 @@ export function StudentFormModal({
         <DialogActions>
           {!isViewMode && (
             <>
-              <Button onClick={onClose}>Cancel</Button>
-              <Button type="submit" variant="contained">
-                {student ? 'Update' : 'Add'}
+              <Button onClick={onClose} disabled={isSubmitting}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="contained" disabled={isSubmitting}>
+                {isSubmitting ? 'Processing...' : student ? 'Update' : 'Add'}
               </Button>
             </>
           )}

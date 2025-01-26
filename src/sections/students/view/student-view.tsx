@@ -18,7 +18,7 @@ import { Scrollbar } from 'src/components/scrollbar';
 
 import { auth } from 'src/auth/config';
 
-import { TableNoData } from '../table-no-data';
+import { TableNoData } from '../table-no-data'; 
 import { applyFilter, getComparator } from '../utils';
 import { StudentTableRow } from '../student-table-row';
 import { StudentTableHead } from '../student-table-head';
@@ -152,6 +152,12 @@ export function StudentView() {
               color="inherit"
               startIcon={<Iconify icon="mingcute:add-line" />}
               onClick={handleAdd}
+              sx={{
+                transition: 'transform 0.2s ease-in-out',
+                '&:hover': {
+                  transform: 'scale(1.05)',
+                },
+              }}
             >
               New Student
             </Button>
