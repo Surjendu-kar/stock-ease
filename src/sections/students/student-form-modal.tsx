@@ -133,6 +133,7 @@ export function StudentFormModal({
         {isViewMode ? 'View Student' : student ? 'Edit Student' : 'Add New Student'}
         <Box>
           {isViewMode && (
+            // Edit button
             <Tooltip title="Edit Student">
               <IconButton
                 aria-label="edit"
@@ -146,6 +147,7 @@ export function StudentFormModal({
               </IconButton>
             </Tooltip>
           )}
+          {/* Close button */}
           <Tooltip title="Close">
             <IconButton
               aria-label="close"
