@@ -427,7 +427,7 @@ export function StudentFormModal({
                 Cancel
               </Button>
               <Button type="submit" variant="contained" disabled={isSubmitting}>
-                {isSubmitting ? 'Processing...' : student ? 'Update' : 'Add'}
+                {student ? 'Update' : 'Add'}
               </Button>
             </>
           )}

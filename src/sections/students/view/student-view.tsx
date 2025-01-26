@@ -18,7 +18,7 @@ import { Scrollbar } from 'src/components/scrollbar';
 
 import { auth } from 'src/auth/config';
 
-import { TableNoData } from '../table-no-data'; 
+import { TableNoData } from '../table-no-data';
 import { applyFilter, getComparator } from '../utils';
 import { StudentTableRow } from '../student-table-row';
 import { StudentTableHead } from '../student-table-head';
@@ -99,16 +99,16 @@ export function StudentView() {
       return;
     }
     try {
-      const studentData = { ...formData, userId: user.uid };
+      const studentData = { ...formData };
 
       if (selectedStudent) {
-        await studentService.update(selectedStudent.id, studentData);
+        await studentService.update(user.uid, selectedStudent.id, studentData);
         setStudents((prev) =>
           prev.map((s) => (s.id === selectedStudent.id ? { ...s, ...studentData } : s))
         );
         setSnackbarMessage('Student updated successfully');
       } else {
-        const docRef = await studentService.add(studentData);
+        const docRef = await studentService.add(user.uid, studentData);
         setStudents((prev) => [{ ...studentData, id: docRef.id }, ...prev]);
         setSnackbarMessage('Student added successfully');
       }
@@ -124,17 +124,19 @@ export function StudentView() {
   };
 
   const handleDelete = async (student: StudentProps) => {
+    if (!user?.uid) return;
+
     try {
-      await studentService.delete(student.id);
+      await studentService.delete(user.uid, student.id);
       setStudents((prev) => prev.filter((s) => s.id !== student.id));
       setSnackbarMessage('Student deleted successfully');
       setSnackbarSeverity('success');
       setOpenSnackbar(true);
     } catch (error) {
+      console.error('Error:', error);
       setSnackbarMessage('Error deleting student');
       setSnackbarSeverity('error');
       setOpenSnackbar(true);
-      console.error('Error:', error);
     }
   };
 

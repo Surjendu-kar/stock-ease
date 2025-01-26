@@ -2,6 +2,7 @@ import { ReactNode, useCallback } from 'react';
 import { useAuthState } from 'src/hooks/use-auth-state';
 import { logout } from 'src/auth/auth';
 import { Iconify } from 'src/components/iconify';
+import { useNavigate } from 'react-router-dom';
 
 type NavItem = {
   title: string;
@@ -13,16 +14,16 @@ type NavItem = {
 
 export function useNavConfig() {
   const { isAuthenticated } = useAuthState();
+  const navigate = useNavigate();
 
   const handleLogout = useCallback(async () => {
     try {
       await logout();
-      console.log('Logged out successfully');
-      window.location.href = '/';
+      navigate('/sign-in');
     } catch (error) {
       console.error('Logout failed:', error);
     }
-  }, []);
+  }, [navigate]);
 
   const navItems: NavItem[] = [
     {

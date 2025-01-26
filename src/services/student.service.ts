@@ -1,33 +1,35 @@
 import type { StudentProps } from 'src/sections/students/types/student-types';
 
-import {
-  doc,
-  query,
-  where,
-  addDoc,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-  collection,
-} from 'firebase/firestore';
+import { doc, addDoc, getDocs, updateDoc, deleteDoc, collection } from 'firebase/firestore';
 
 import { db } from 'src/auth/config';
 
-const COLLECTION = 'students';
-
 export const studentService = {
   getAll: async (userId: string) => {
-    const q = query(collection(db, COLLECTION), where('userId', '==', userId));
-    const querySnapshot = await getDocs(q);
+    // Get students from subcollection
+    const studentsRef = collection(db, 'users', userId, 'students');
+    const querySnapshot = await getDocs(studentsRef);
+
     return querySnapshot.docs.map(
       (document) => ({ id: document.id, ...document.data() }) as StudentProps
     );
   },
 
-  add: async (student: Omit<StudentProps, 'id'>) => addDoc(collection(db, COLLECTION), student),
+  add: async (userId: string, student: Omit<StudentProps, 'id'>) => {
+    // Add to students subcollection
+    const studentsRef = collection(db, 'users', userId, 'students');
+    return addDoc(studentsRef, student);
+  },
 
-  update: async (id: string, student: Partial<Omit<StudentProps, 'id'>>) =>
-    updateDoc(doc(db, COLLECTION, id), student),
+  update: async (userId: string, studentId: string, student: Partial<Omit<StudentProps, 'id'>>) => {
+    // Update student in subcollection
+    const studentRef = doc(db, 'users', userId, 'students', studentId);
+    return updateDoc(studentRef, student);
+  },
 
-  delete: async (id: string) => deleteDoc(doc(db, COLLECTION, id)),
+  delete: async (userId: string, studentId: string) => {
+    // Delete student from subcollection
+    const studentRef = doc(db, 'users', userId, 'students', studentId);
+    return deleteDoc(studentRef);
+  },
 };
